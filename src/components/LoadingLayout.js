@@ -3,15 +3,12 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { colors } from '../styles/base';
 
-function Loading() {
+export function LoadingLayout() {
   return (
     <View style={styles.container}>
-      <LinearGradient
-        style={styles.gradient}
-        colors={[colors.blueDark, colors.blueDark, colors.blueMid, colors.blueLight]}
-      />
+      <LinearGradient style={styles.gradient} colors={[colors.greenDark, colors.green, colors.greenLight]} />
       <View style={styles.logo}>
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.white} />
       </View>
     </View>
   );
@@ -37,5 +34,3 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
 });
-
-export default Loading;

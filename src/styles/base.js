@@ -15,7 +15,6 @@ export const colors = {
   grayDarkLight: '#404D66',
   grayChip: '#E5EBEF',
   black: '#000000',
-  green: '#37B46E',
   blueDark: '#0B2B57',
   blueMid: '#004485',
   blueLight: '#0178C3',
@@ -24,11 +23,15 @@ export const colors = {
   blueSolid: '#8299BD',
   darkLight: '#002B5414',
   whiteLight: '#0ADCEF24',
+
   //Colors
   yellow: '#F0D506',
   white: '#FFFFFF',
   red: '#fe3f38',
   grayDark: '#3A4555',
+  green: '#0CAF0F',
+  greenDark: '#08630A',
+  greenLight: '#12EC16',
 };
 
 export const fonts = {

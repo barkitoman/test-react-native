@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
-import LoadingLayout from '../../components/Loading';
+import { LoadingLayout } from '../../components';
 import { ContextApp } from '../../utils/ContextApp';
 
 const Loading = ({ navigation, route }) => {
@@ -9,6 +9,7 @@ const Loading = ({ navigation, route }) => {
 
   const getPost = async () => {
     try {
+      // navigation.navigate('ListPost');
     } catch (error) {
       // navigation.navigate('Login');
     }

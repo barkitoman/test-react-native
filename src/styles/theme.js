@@ -28,7 +28,7 @@ export const theme = {
   Text: {
     style: {
       fontFamily: fonts.primary,
-      color: colors.blueDark,
+      color: colors.grayDark,
       fontSize: 16,
       textAlign: 'center',
     },
