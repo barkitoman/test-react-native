@@ -1,19 +1,38 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as Font from 'expo-font';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { ThemeProvider } from 'react-native-elements';
+import { AppContainer } from './src/components/core';
+import { theme } from './src/styles/theme';
+import { AppProvider, ContextApp } from './src/utils/ContextApp';
 
-export default function App() {
+const App = () => {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  const fetchFont = async () => {
+    await Font.loadAsync({
+      'poppins-regular': require('./assets/fonts/Poppins-Regular.ttf'),
+      'poppins-bold': require('./assets/fonts/Poppins-Bold.ttf'),
+    });
+
+    setFontsLoaded(true);
+  };
+
+  useEffect(() => {
+    fetchFont(fontsLoaded);
+  }, [fontsLoaded]);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <View style={{ flex: 1 }}>
+      <AppProvider>
+        <ContextApp.Consumer>
+          {({ user }) => (
+            <ThemeProvider theme={theme}>{fontsLoaded && <AppContainer user={user} />}</ThemeProvider>
+          )}
+        </ContextApp.Consumer>
+      </AppProvider>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
