@@ -1,28 +1,17 @@
 import React, { useContext, useEffect, useReducer } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-elements';
 import { CSpinner } from '../../components';
 import { EmptyList } from '../../components/EmptyList';
 import { InputSearch } from '../../components/InputSearch';
 import { colors } from '../../styles/base';
 import { ContextApp } from '../../utils/ContextApp';
-import ItemFacilities from './ItemFacilities';
-
-const HeaderItem = () => (
-  <View style={styles.headerContainer}>
-    <Text style={[styles.headerText, { marginLeft: 30 }]}>Name</Text>
-    <View style={styles.headerItems}>
-      <Text style={[styles.headerText, { textAlign: 'center' }]}>Zones</Text>
-      <Text style={[styles.headerText, { textAlign: 'center' }]}>Users</Text>
-    </View>
-  </View>
-);
+import { ItemPostList } from './ItemPostList';
 
 const ListPost = () => {
   const initalSt = { ...initialState };
   const [state, dispatch] = useReducer(reducer, initalSt);
-  const { loading, dataFacilitesList, requestDataFacilities } = state;
-  const { user } = useContext(ContextApp);
+  const { loading, dataPostsList, requestDataPosts } = state;
+  const { posts } = useContext(ContextApp);
 
   const triggerDispatch = (type, payload) => {
     dispatch({ type, payload });
@@ -36,48 +25,73 @@ const ListPost = () => {
 
   const searchFilter = (text) => {
     if (text != '') {
-      const newData = requestDataFacilities.filter((item) => {
-        const itemData = `${item.name.toUpperCase()}`;
+      const newData = requestDataPosts.filter((item) => {
+        const itemData = `${item.body.toUpperCase()}`;
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      triggerDispatch(SET_DATA_FACILITIES_LIST, newData);
+      triggerDispatch(SET_DATA_POSTS_LIST, newData);
     } else {
-      triggerDispatch(SET_DATA_FACILITIES_LIST, requestDataFacilities);
+      triggerDispatch(SET_DATA_POSTS_LIST, requestDataPosts);
     }
   };
 
-  const fetchDataFacilities = async () => {
-    try {
-      const data = [];
-      triggerDispatch(SET_REQUEST, data);
-      triggerDispatch(SET_LOADING, false);
-    } catch (error) {
-      console.log(error);
-      triggerDispatch(SET_LOADING, false);
+  const updatePosts = async () => {
+    if (posts) {
+      let parsePost = parseData(posts);
+      triggerDispatch(SET_REQUEST, parsePost);
     }
+    triggerDispatch(SET_LOADING, false);
+  };
+
+  const parseData = (posts) => {
+    let count = 0;
+    const post = posts.map((item, i) => {
+      if (i < 20) {
+        const newItem = item;
+        newItem.wasReading = false;
+        return newItem;
+      } else {
+        const newItem = item;
+        newItem.wasReading = true;
+        return newItem;
+      }
+    });
+
+    return post;
+  };
+
+  const handleSetPostRead = (id) => {
+    const postsUpdated = requestDataPosts.map((item) => {
+      if (item.id == id) {
+        item.wasReading = true;
+      }
+      return item;
+    });
+    triggerDispatch(SET_REQUEST, postsUpdated);
   };
 
   useEffect(() => {
-    fetchDataFacilities();
-  }, []);
+    updatePosts();
+  }, [posts]);
 
   return (
     <View style={styles.content}>
       <CSpinner loading={loading} />
-      <InputSearch onChange={onChangeSearch} reloadItems={fetchDataFacilities}></InputSearch>
+      <InputSearch onChange={onChangeSearch} reloadItems={updatePosts}></InputSearch>
 
       <View style={styles.listContainer}>
         {!loading && (
           <FlatList
             style={styles.headerList}
-            data={dataFacilitesList}
-            removeClippedSubviews={false}
-            ListHeaderComponent={dataFacilitesList && dataFacilitesList.length ? <HeaderItem /> : null}
+            data={dataPostsList}
+            removeClippedSubviews={true}
             ListEmptyComponent={<EmptyList info={listFacilitiesStrings.withoutData} />}
-            stickyHeaderIndices={[0]}
+            // stickyHeaderIndices={[0]}
             keyExtractor={keyExtractor}
-            renderItem={({ item, index }) => <ItemFacilities {...item} key={index} />}
+            renderItem={({ item, index }) => (
+              <ItemPostList {...item} key={index} setPostRead={handleSetPostRead} />
+            )}
           />
         )}
       </View>
@@ -87,27 +101,27 @@ const ListPost = () => {
 
 const initialState = {
   loading: true,
-  dataFacilitesList: undefined,
-  requestDataFacilities: undefined,
+  dataPostsList: undefined,
+  requestDataPosts: undefined,
 };
 
 const ACTIONS = {
   SET_LOADING: 'setLoading',
-  SET_DATA_FACILITIES_LIST: 'setNotificationInfo',
-  SET_REQUEST: 'setRequestFacilities',
+  SET_DATA_POSTS_LIST: 'setPostList',
+  SET_REQUEST: 'setRequestPosts',
 };
 
-const { SET_LOADING, SET_DATA_FACILITIES_LIST, SET_REQUEST } = ACTIONS;
+const { SET_LOADING, SET_DATA_POSTS_LIST, SET_REQUEST } = ACTIONS;
 
 const reducer = (state, action) => {
   const { type, payload } = action;
   switch (type) {
     case SET_LOADING:
       return { ...state, loading: payload };
-    case SET_DATA_FACILITIES_LIST:
-      return { ...state, dataFacilitesList: payload };
+    case SET_DATA_POSTS_LIST:
+      return { ...state, dataPostsList: payload };
     case SET_REQUEST:
-      return { ...state, requestDataFacilities: payload, dataFacilitesList: payload };
+      return { ...state, requestDataPosts: payload, dataPostsList: payload };
   }
 };
 
@@ -149,9 +163,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   listContainer: {
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginTop: 20,
     flex: 1,
   },
   headerItems: {

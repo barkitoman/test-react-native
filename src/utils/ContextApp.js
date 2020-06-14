@@ -1,16 +1,26 @@
 import PropTypes from 'prop-types';
 import React, { createContext, useMemo, useState } from 'react';
+import API from './Api';
 
 const initialValue = null;
 
 export const ContextApp = createContext({ initialValue });
 
 export const AppProvider = ({ children }) => {
-  const [post, setPost] = useState(initialValue);
+  const [posts, setPosts] = useState(initialValue);
 
-  const savePosts = () => {};
+  const setPost = (posts) => {
+    setPosts(posts);
+  };
 
-  const userDataValue = useMemo(() => ({ savePosts, post }), [post]);
+  const getAllPosts = async () => {
+    const allPost = await API.post.getPosts();
+    if (Array.isArray(allPost)) {
+      setPosts(allPost);
+    }
+  };
+
+  const userDataValue = useMemo(() => ({ setPost, posts, getAllPosts }), [posts]);
   return <ContextApp.Provider value={userDataValue}>{children}</ContextApp.Provider>;
 };
 

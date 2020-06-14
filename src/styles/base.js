@@ -7,31 +7,17 @@ export const dimensions = {
 };
 
 export const colors = {
-  grayLighter: '#F5F7FA',
-  grayLight: '#F4F5F8',
-  grayLightMid: '#CCCCCC',
-  grayDarkLightMid: '#CED5E2',
-  grayDarkMid: '#A3B0C4',
-  grayDarkLight: '#404D66',
-  grayChip: '#E5EBEF',
-  black: '#000000',
-  blueDark: '#0B2B57',
-  blueMid: '#004485',
-  blueLight: '#0178C3',
-  blueDisabled: '#007aff',
-  blueItalic: '#0164C3',
-  blueSolid: '#8299BD',
-  darkLight: '#002B5414',
-  whiteLight: '#0ADCEF24',
-
   //Colors
   yellow: '#F0D506',
   white: '#FFFFFF',
   red: '#fe3f38',
   grayDark: '#3A4555',
+  grayLightMid: '#b2b2b2',
+  grayLight: '#B7B7B9',
   green: '#0CAF0F',
   greenDark: '#08630A',
   greenLight: '#12EC16',
+  blue: '#007ffb',
 };
 
 export const fonts = {
