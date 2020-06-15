@@ -1,41 +1,21 @@
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { Icon, Text } from 'react-native-elements';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { colors } from '../../styles/base';
+import { colors } from '../styles/base';
 
-export const ItemPostList = ({ body, wasReading, isFavorite, setPostRead, id }) => {
-  const navigation = useNavigation();
-
-  const toggleItem = async (id) => {
-    setPostRead(id);
-    setTimeout(() => {
-      navigation.navigate('DetailPost');
-    }, 100);
-  };
-
+export const ItemComment = (props) => {
   const getBackgroundColor = () => {
     return colors.white;
   };
-
+  console.log(props, 'dddd');
   return (
     <Animated.View style={[{ backgroundColor: getBackgroundColor(), ...styles.content }]}>
       <TouchableOpacity onPress={() => toggleItem(id)}>
         <View style={[styles.itemContainer]}>
-          <View style={{ width: '4%' }}>
-            {isFavorite ? (
-              <Icon name="ios-star" type="ionicon" color={colors.yellow} />
-            ) : !wasReading ? (
-              <View style={styles.notRead}></View>
-            ) : null}
-          </View>
-
           <View style={{ width: '90%' }}>
-            <Text style={styles.itemText}>{body}</Text>
+            <Text style={styles.itemText}>body</Text>
           </View>
-          <Icon name="chevron-right" type="octicon" color={colors.grayDark} style={{ marginRight: 15 }} />
         </View>
         <View style={{ borderColor: colors.grayLight, borderWidth: 0.5 }}></View>
       </TouchableOpacity>
@@ -67,10 +47,6 @@ const styles = StyleSheet.create({
   },
 });
 
-ItemPostList.propTypes = {
+ItemComment.propTypes = {
   body: PropTypes.string,
-  wasReading: PropTypes.bool,
-  isFavorite: PropTypes.bool,
-  setPostRead: PropTypes.func,
-  id: PropTypes.number,
 };

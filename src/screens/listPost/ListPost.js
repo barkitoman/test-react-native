@@ -11,7 +11,7 @@ const ListPost = () => {
   const initalSt = { ...initialState };
   const [state, dispatch] = useReducer(reducer, initalSt);
   const { loading, dataPostsList, requestDataPosts } = state;
-  const { posts } = useContext(ContextApp);
+  const { posts, setPost } = useContext(ContextApp);
 
   const triggerDispatch = (type, payload) => {
     dispatch({ type, payload });
@@ -45,7 +45,6 @@ const ListPost = () => {
   };
 
   const parseData = (posts) => {
-    let count = 0;
     const post = posts.map((item, i) => {
       if (i < 20) {
         const newItem = item;
@@ -63,8 +62,9 @@ const ListPost = () => {
 
   const handleSetPostRead = (id) => {
     const postsUpdated = requestDataPosts.map((item) => {
-      if (item.id == id) {
+      if (item.id === id) {
         item.wasReading = true;
+        setPost(item);
       }
       return item;
     });

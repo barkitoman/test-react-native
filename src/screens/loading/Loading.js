@@ -1,6 +1,5 @@
-import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { LoadingLayout } from '../../components';
 import { ContextApp } from '../../utils/ContextApp';
 
@@ -17,11 +16,9 @@ const Loading = ({ navigation, route }) => {
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      getPost();
-    }, []),
-  );
+  useEffect(() => {
+    getPost();
+  }, []);
 
   return <LoadingLayout />;
 };

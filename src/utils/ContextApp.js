@@ -8,9 +8,10 @@ export const ContextApp = createContext({ initialValue });
 
 export const AppProvider = ({ children }) => {
   const [posts, setPosts] = useState(initialValue);
+  const [postSelected, setPostSelected] = useState(initialValue);
 
-  const setPost = (posts) => {
-    setPosts(posts);
+  const setPost = (post) => {
+    setPostSelected(post);
   };
 
   const getAllPosts = async () => {
@@ -20,7 +21,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const userDataValue = useMemo(() => ({ setPost, posts, getAllPosts }), [posts]);
+  const userDataValue = useMemo(() => ({ posts, getAllPosts, setPost, postSelected }), [posts, postSelected]);
   return <ContextApp.Provider value={userDataValue}>{children}</ContextApp.Provider>;
 };
 

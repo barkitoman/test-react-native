@@ -38,13 +38,15 @@ const API = {
     async getPosts() {
       return await makeRequest(`posts`, `GET`);
     },
-    async getSensorsByZoneId(id) {
-      const response = await makeRequest(`getSensorsByZoneId?id=${id}`, `GET`);
-      return response.data;
+  },
+  user: {
+    async getUserInfo(userId) {
+      return await makeRequest(`users/${userId}`, `GET`);
     },
-    async claimSensor(data) {
-      const response = await makeRequest(`claimSensor`, `POST`, data);
-      return response.data;
+  },
+  comments: {
+    async getComments(postId) {
+      return await makeRequest(`comments?postId=${postId}`, `GET`);
     },
   },
 };
