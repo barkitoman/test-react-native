@@ -1,6 +1,9 @@
+import * as SQLite from 'expo-sqlite';
 import PropTypes from 'prop-types';
 import React, { createContext, useMemo, useState } from 'react';
 import API from './Api';
+
+const db = SQLite.openDatabase('db.db');
 
 const initialValue = null;
 
@@ -12,30 +15,30 @@ export const AppProvider = ({ children }) => {
 
   const setPost = (post) => {
     setPostSelected(post);
+    const newPostList = posts.map((item) => {
+      if (item.id == post.id) {
+        return post;
+      }
+      return item;
+    });
+    setPosts(newPostList);
   };
 
   const getAllPosts = async () => {
     const allPost = await API.post.getPosts();
     if (Array.isArray(allPost)) {
-      const dataPost = parseData(allPost);
-      setPosts(dataPost);
+      db.transaction((tx) => {
+        tx.executeSql('SELECT * FROM favorites', [], (_, { rows: { _array } }) => {
+          const post = allPost.map((item, i) => {
+            const newItem = item;
+            newItem.wasReading = i < 20 ? false : true;
+            newItem.isFavorite = _array.some((favorite) => favorite.id == item.id);
+            return newItem;
+          });
+          setPosts(post);
+        });
+      });
     }
-  };
-
-  const parseData = (posts) => {
-    const post = posts.map((item, i) => {
-      if (i < 20) {
-        const newItem = item;
-        newItem.wasReading = false;
-        return newItem;
-      } else {
-        const newItem = item;
-        newItem.wasReading = true;
-        return newItem;
-      }
-    });
-
-    return post;
   };
 
   const userDataValue = useMemo(() => ({ posts, getAllPosts, setPost, postSelected }), [posts, postSelected]);

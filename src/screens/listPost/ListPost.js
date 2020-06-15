@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useReducer } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, LayoutAnimation, StyleSheet, UIManager, View } from 'react-native';
+import { Text } from 'react-native-elements';
+import { RectButton } from 'react-native-gesture-handler';
 import { CSpinner } from '../../components';
 import { EmptyList } from '../../components/EmptyList';
 import { InputSearch } from '../../components/InputSearch';
@@ -7,7 +9,9 @@ import { colors } from '../../styles/base';
 import { ContextApp } from '../../utils/ContextApp';
 import { ItemPostList } from './ItemPostList';
 
-const ListPost = () => {
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+
+const ListPost = ({ type }) => {
   const initalSt = { ...initialState };
   const [state, dispatch] = useReducer(reducer, initalSt);
   const { loading, dataPostsList, requestDataPosts } = state;
@@ -37,9 +41,18 @@ const ListPost = () => {
   };
 
   const updatePosts = async () => {
-    if (posts) {
-      triggerDispatch(SET_REQUEST, posts);
+    if (type === 'all') {
+      if (posts) {
+        triggerDispatch(SET_REQUEST, posts);
+      }
+    } else {
+      if (posts) {
+        const newListPost = posts.filter((post) => post.isFavorite === true);
+
+        triggerDispatch(SET_REQUEST, newListPost);
+      }
     }
+
     triggerDispatch(SET_LOADING, false);
   };
 
@@ -52,6 +65,47 @@ const ListPost = () => {
       return item;
     });
     triggerDispatch(SET_REQUEST, postsUpdated);
+  };
+
+  const deletePost = (id) => {
+    setAnimation();
+    triggerDispatch(
+      SET_REQUEST,
+      dataPostsList.slice().filter((item) => item.id !== id),
+    );
+  };
+
+  const setAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 250,
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+        springDamping: 0.7,
+      },
+    });
+  };
+
+  const setAnimationDelete = () => {
+    LayoutAnimation.configureNext({
+      duration: 250,
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+        springDamping: 0.7,
+      },
+    });
+    LayoutAnimation.configureNext({
+      duration: 500,
+      create: {
+        type: LayoutAnimation.Types.easeIn,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.7,
+      },
+    });
+  };
+
+  const clearPost = () => {
+    setAnimationDelete();
+    triggerDispatch(SET_REQUEST, []);
   };
 
   useEffect(() => {
@@ -71,10 +125,26 @@ const ListPost = () => {
             ListEmptyComponent={<EmptyList info={listFacilitiesStrings.withoutData} />}
             keyExtractor={keyExtractor}
             renderItem={({ item, index }) => (
-              <ItemPostList {...item} key={index} setPostRead={handleSetPostRead} />
+              <ItemPostList
+                {...item}
+                key={index}
+                setPostRead={handleSetPostRead}
+                handlerDelete={deletePost}
+              />
             )}
           />
         )}
+      </View>
+      <View style={{ height: 50 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <RectButton
+            style={{ backgroundColor: colors.red, flex: 1, justifyContent: 'center', height: 50 }}
+            onPress={clearPost}
+          >
+            <Text style={{ textAlign: 'center', color: colors.white }}>Delete All</Text>
+          </RectButton>
+        </View>
+        {/* */}
       </View>
     </View>
   );
@@ -130,7 +200,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
   },
-  headerList: {},
+
   separator: {
     height: 1,
     width: '100%',
@@ -145,6 +215,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+    marginBottom: 30,
   },
   headerItems: {
     flexDirection: 'row',

@@ -8,7 +8,7 @@ const Tab = createMaterialTopTabNavigator();
 
 export const PostNavigator = ({ route }) => {
   return (
-    <Tab.Navigator tabBar={(props) => <TopTapNavigator {...props} />} lazy={true}>
+    <Tab.Navigator tabBar={(props) => <TopTapNavigator {...props} />} lazy={true} swipeEnabled={false}>
       <Tab.Screen name="all" options={{ tabBarLabel: 'All' }}>
         {(props) => <ListPost type="all" {...props}></ListPost>}
       </Tab.Screen>

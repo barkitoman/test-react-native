@@ -3,6 +3,7 @@
 /* eslint-disable react/prop-types */
 import { DrawerActions } from '@react-navigation/native';
 import Constants from 'expo-constants';
+import * as SQLite from 'expo-sqlite';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -10,6 +11,8 @@ import { Header, Icon, Text } from 'react-native-elements';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import { colors, dimensions } from '../styles/base';
 import { ContextApp } from '../utils/ContextApp';
+
+const db = SQLite.openDatabase('db.db');
 
 const PageContainerContent = ({ children, margin }) => {
   return <View style={[styles.contentPageContainer, { margin: margin }]}>{children}</View>;
@@ -21,7 +24,7 @@ export const PageContainer = (
 ) => {
   return ({ navigation, route, ...props }) => {
     const [loading, setLoading] = useState(false);
-    const { getAllPosts } = useContext(ContextApp);
+    const { getAllPosts, postSelected, setPost } = useContext(ContextApp);
 
     useEffect(() => {}, []);
 
@@ -33,7 +36,36 @@ export const PageContainer = (
       navigation.dispatch(DrawerActions.toggleDrawer());
     };
 
-    const addToFavorite = () => {};
+    const addRemoveToFavorite = () => {
+      if (postSelected && !postSelected.isFavorite) {
+        db.transaction(
+          (tx) => {
+            tx.executeSql('INSERT INTO favorites (id, body) values (?, ?)', [
+              postSelected.id,
+              postSelected.body,
+            ]);
+            tx.executeSql('SELECT * FROM favorites', [], (_, { rows }) => console.log(JSON.stringify(rows)));
+          },
+          null,
+          () => {
+            postSelected.isFavorite = true;
+            setPost(postSelected);
+          },
+        );
+      } else if (postSelected && postSelected.isFavorite) {
+        db.transaction(
+          (tx) => {
+            tx.executeSql(`DELETE FROM favorites where id = ?;`, [postSelected.id]);
+            tx.executeSql('SELECT * FROM favorites', [], (_, { rows }) => console.log(JSON.stringify(rows)));
+          },
+          null,
+          () => {
+            postSelected.isFavorite = false;
+            setPost(postSelected);
+          },
+        );
+      }
+    };
 
     const refreshPost = () => {
       getAllPosts();
@@ -48,9 +80,15 @@ export const PageContainer = (
     };
 
     const renderFavoriteIcon = () => {
+      console.log(postSelected, 'sse');
       return (
         <TouchableOpacity style={styles.btnHeader}>
-          <Icon name="ios-star-outline" type="ionicon" color={colors.white} onPress={addToFavorite} />
+          {postSelected && postSelected.isFavorite && (
+            <Icon name="ios-star" type="ionicon" color={colors.yellow} onPress={addRemoveToFavorite} />
+          )}
+          {postSelected && !postSelected.isFavorite && (
+            <Icon name="ios-star-outline" type="ionicon" color={colors.white} onPress={addRemoveToFavorite} />
+          )}
         </TouchableOpacity>
       );
     };

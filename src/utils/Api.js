@@ -38,6 +38,9 @@ const API = {
     async getPosts() {
       return await makeRequest(`posts`, `GET`);
     },
+    async deletePost(id) {
+      return await makeRequest(`posts/${id}`, `DELETE`);
+    },
   },
   user: {
     async getUserInfo(userId) {
