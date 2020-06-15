@@ -4,13 +4,12 @@
 import { DrawerActions } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Header, Icon, Text } from 'react-native-elements';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import { colors, dimensions } from '../styles/base';
 import { ContextApp } from '../utils/ContextApp';
-import { camelCase, getLettersName } from '../utils/Generalities';
 
 const PageContainerContent = ({ children, margin }) => {
   return <View style={[styles.contentPageContainer, { margin: margin }]}>{children}</View>;
@@ -21,45 +20,10 @@ export const PageContainer = (
   { title, backPath = false, favorite = false, refresh = false, hasScrollView = false, margin = 17 } = {},
 ) => {
   return ({ navigation, route, ...props }) => {
-    const initalSt = { ...initialState };
-    const [state, dispatch] = useReducer(reducer, initalSt);
-    const { name, shortName, company } = state;
-    const { user } = useContext(ContextApp);
+    const [loading, setLoading] = useState(false);
+    const { getAllPosts } = useContext(ContextApp);
 
-    const triggerDispatch = (type, payload) => {
-      dispatch({ type, payload });
-    };
-
-    const setLayout = () => {
-      if (user) {
-        const { user: dataUser } = user;
-        if (dataUser) {
-          const userConfig = {
-            name: camelCase(dataUser.name),
-            shortName: getLettersName(camelCase(dataUser.name)),
-            company: dataUser.company,
-          };
-          triggerDispatch(SET_USER, userConfig);
-          switch (dataUser.id) {
-            case 17151:
-              triggerDispatch(SET_SHORT_NAME, 'DB');
-              break;
-            case 17152:
-              triggerDispatch(SET_SHORT_NAME, 'RB');
-              break;
-            case 17154:
-              triggerDispatch(SET_SHORT_NAME, 'JB');
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    };
-
-    useEffect(() => {
-      setLayout();
-    }, []);
+    useEffect(() => {}, []);
 
     const navigateBack = () => {
       navigation.goBack();
@@ -71,7 +35,9 @@ export const PageContainer = (
 
     const addToFavorite = () => {};
 
-    const refreshPost = () => {};
+    const refreshPost = () => {
+      getAllPosts();
+    };
 
     const renderLeftIcon = () => {
       return (
@@ -92,7 +58,7 @@ export const PageContainer = (
     const renderRefreshIcon = () => {
       return (
         <TouchableOpacity style={styles.btnHeader}>
-          <MaterialCommunityIcons name="reload" size={25} color="white" />
+          <MaterialCommunityIcons name="reload" size={25} color="white" onPress={refreshPost} />
         </TouchableOpacity>
       );
     };
@@ -103,6 +69,7 @@ export const PageContainer = (
           {title && <Text style={{ color: colors.white }}>{title}</Text>}
           {favorite ? renderFavoriteIcon() : renderRefreshIcon()}
         </Header>
+
         {hasScrollView ? (
           <ScrollView alwaysBounceVertical={false}>
             <PageContainerContent margin={margin}>
@@ -117,30 +84,6 @@ export const PageContainer = (
       </SafeAreaView>
     );
   };
-};
-
-const initialState = {
-  name: '',
-  shortName: '',
-  company: '',
-};
-
-const ACTIONS = {
-  SET_USER: 'setUser',
-  SET_SHORT_NAME: 'setShorName',
-};
-
-const { SET_USER, SET_SHORT_NAME } = ACTIONS;
-
-const reducer = (state, action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case SET_USER:
-      const { name, shortName, company } = payload;
-      return { ...state, name, shortName, company };
-    case SET_SHORT_NAME:
-      return { ...state, shortName: payload };
-  }
 };
 
 const styles = StyleSheet.create({

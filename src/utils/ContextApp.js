@@ -17,8 +17,25 @@ export const AppProvider = ({ children }) => {
   const getAllPosts = async () => {
     const allPost = await API.post.getPosts();
     if (Array.isArray(allPost)) {
-      setPosts(allPost);
+      const dataPost = parseData(allPost);
+      setPosts(dataPost);
     }
+  };
+
+  const parseData = (posts) => {
+    const post = posts.map((item, i) => {
+      if (i < 20) {
+        const newItem = item;
+        newItem.wasReading = false;
+        return newItem;
+      } else {
+        const newItem = item;
+        newItem.wasReading = true;
+        return newItem;
+      }
+    });
+
+    return post;
   };
 
   const userDataValue = useMemo(() => ({ posts, getAllPosts, setPost, postSelected }), [posts, postSelected]);

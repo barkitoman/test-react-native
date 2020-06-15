@@ -38,30 +38,13 @@ const ListPost = () => {
 
   const updatePosts = async () => {
     if (posts) {
-      let parsePost = parseData(posts);
-      triggerDispatch(SET_REQUEST, parsePost);
+      triggerDispatch(SET_REQUEST, posts);
     }
     triggerDispatch(SET_LOADING, false);
   };
 
-  const parseData = (posts) => {
-    const post = posts.map((item, i) => {
-      if (i < 20) {
-        const newItem = item;
-        newItem.wasReading = false;
-        return newItem;
-      } else {
-        const newItem = item;
-        newItem.wasReading = true;
-        return newItem;
-      }
-    });
-
-    return post;
-  };
-
   const handleSetPostRead = (id) => {
-    const postsUpdated = requestDataPosts.map((item) => {
+    const postsUpdated = dataPostsList.map((item) => {
       if (item.id === id) {
         item.wasReading = true;
         setPost(item);
@@ -79,7 +62,6 @@ const ListPost = () => {
     <View style={styles.content}>
       <CSpinner loading={loading} />
       <InputSearch onChange={onChangeSearch} reloadItems={updatePosts}></InputSearch>
-
       <View style={styles.listContainer}>
         {!loading && (
           <FlatList
@@ -87,7 +69,6 @@ const ListPost = () => {
             data={dataPostsList}
             removeClippedSubviews={true}
             ListEmptyComponent={<EmptyList info={listFacilitiesStrings.withoutData} />}
-            // stickyHeaderIndices={[0]}
             keyExtractor={keyExtractor}
             renderItem={({ item, index }) => (
               <ItemPostList {...item} key={index} setPostRead={handleSetPostRead} />
