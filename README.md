@@ -6,6 +6,10 @@ This is a react native app for test
 
 - This react native application is made with Expo for ease of development, you only need to run the Yarn install command and then run the yarn start command
 
+- Inside the project folder there is a folder called APIREST this folder has a server that was mounted with rest services and another part with Sockets.
+You need to install and run the server in NODEJS installing a database in MSSQL
+This is really to show that I have worked with all kinds of projects.
+
 ## Comments
 
 - A design pattern or HOC technique is used for the app,
