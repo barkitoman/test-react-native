@@ -1,2 +1,1 @@
-export * from "./AppContainer";
-export * from "./components";
+export * from './AppContainer';

@@ -4,12 +4,12 @@ import { LoadingLayout } from '../../components';
 import { ContextApp } from '../../utils/ContextApp';
 
 const Loading = ({ navigation, route }) => {
-  const { getAllPosts } = useContext(ContextApp);
+  const { getTags } = useContext(ContextApp);
 
   const getPost = async () => {
     try {
-      getAllPosts();
-      navigation.navigate('ListPost');
+      getTags();
+      navigation.navigate('ListTags');
     } catch (error) {
       console.log('We have an error from service');
       navigation.navigate('Error');

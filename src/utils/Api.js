@@ -1,5 +1,5 @@
-const SERVER_URL = 'jsonplaceholder.typicode.com';
-const BASE_URL = `https://${SERVER_URL}/`;
+const SERVER_URL = 'localhost:1434';
+const BASE_URL = `http://${SERVER_URL}/api/v1/`;
 
 async function makeRequest(sufix = '/', method = 'GET', payload = {}, multipart = false) {
   const contentType = 'application/json';
@@ -18,7 +18,7 @@ async function makeRequest(sufix = '/', method = 'GET', payload = {}, multipart 
   if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
     general.body = JSON.stringify(payload);
   }
-
+  console.log(general);
   return await fetch(`${BASE_URL}${sufix}`, general)
     .then((response) => {
       console.log(method, response.status, `${BASE_URL}${sufix}`);
@@ -34,22 +34,19 @@ async function makeRequest(sufix = '/', method = 'GET', payload = {}, multipart 
 }
 
 const API = {
-  post: {
-    async getPosts() {
-      return await makeRequest(`posts`, `GET`);
+  tags: {
+    async getTags() {
+      return await makeRequest(`tags`, `GET`);
     },
-    async deletePost(id) {
-      return await makeRequest(`posts/${id}`, `DELETE`);
+    async setTag(body) {
+      return await makeRequest(`tags`, `POST`, body);
     },
-  },
-  user: {
-    async getUserInfo(userId) {
-      return await makeRequest(`users/${userId}`, `GET`);
+    async addTag(body) {
+      console.log(body, '333');
+      return await makeRequest(`tags`, `PUT`, body);
     },
-  },
-  comments: {
-    async getComments(postId) {
-      return await makeRequest(`comments?postId=${postId}`, `GET`);
+    async deleteTags(id) {
+      return await makeRequest(`tags/${id}`, `DELETE`);
     },
   },
 };
